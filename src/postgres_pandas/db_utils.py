@@ -30,6 +30,5 @@ def update_table_from_df(df, conn, table, keys, values):
           f'{data} ) ' \
           f'AS new_values ({",".join(keys + values)}) ' \
           f'WHERE {where_str}'
-    print(sql)
     with conn.cursor() as cur:
         cur.execute(sql)
