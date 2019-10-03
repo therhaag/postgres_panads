@@ -54,5 +54,27 @@ def test_table(test_db):
                     "VALUES ('p1', '0815', '2019-01-02', 666, 777)")
         cur.execute("INSERT INTO demand (plant_name, ph_6_code, date, value, pred) "
                     "VALUES ('p2', '0815', '2019-01-01', 666, 777)")
+        cur.execute('ALTER TABLE demand ADD CONSTRAINT "demand_unique_ppd" UNIQUE ("plant_name", "ph_6_code", "date")')
     test_db.commit()
     return test_db
+
+
+@pytest.fixture
+def test_table_as_df_after_update():
+    df = pd.DataFrame({'actuals_id': [1, 2],
+                       'plant_name': ['p1', 'p2'],
+                       'ph_6_code': ['0815', '0815'],
+                       'date': ['2019-01-02', '2019-01-01'],
+                       'value': [666.0, 5.0],
+                       'pred': [777.0, 5.0]})
+    return df
+
+
+@pytest.fixture
+def test_table_as_df_after_upsert():
+    df = pd.DataFrame({'plant_name': ['p2', 'p3', 'p1', 'p1'],
+                       'ph_6_code': ['0815', '0815', '0815', '0815'],
+                       'date': ['2019-01-01', '2019-01-01', '2019-01-01', '2019-01-02'],
+                       'value': [5.0, 23.0, 42.0, 666.0],
+                       'pred': [5.0, 25.0, 45.0, 777]})
+    return df

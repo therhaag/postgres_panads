@@ -32,3 +32,19 @@ def update_table_from_df(df, conn, table, keys, values):
           f'WHERE {where_str}'
     with conn.cursor() as cur:
         cur.execute(sql)
+
+
+def upsert_table_from_df(df, conn, table, keys, values):
+    data = ','.join(map(str, (df[keys + values].itertuples(index=False, name=None))))
+
+    value_assign_str = ','.join([f'{v} = EXCLUDED.{v}' for v in values])
+    sql = f'INSERT INTO {table} ' \
+          f'({",".join(keys + values)}) ' \
+          f'VALUES ' \
+          f'{data} ' \
+          f'ON CONFLICT ({",".join(keys)})' \
+          f'DO UPDATE SET ' \
+          f'{value_assign_str}'
+    print(sql)
+    with conn.cursor() as cur:
+        cur.execute(sql)
